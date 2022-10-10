@@ -1,0 +1,26 @@
+name: CI
+on:
+  pull_request:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-go@v3
+        with:
+          go-version: '1.18'
+      - name: Run tests
+        run: |
+          go test ./...
+          go test -race ./...
+      - name: Check go mod
+        run: |
+          go mod tidy
+          go mod verify
+          # ensure no added dependencies
+          git diff --exit-code
